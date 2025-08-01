@@ -1,20 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Camera Test</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snap Camera Lens Demo</title>
+  <script src="https://unpkg.com/@snap/camera-kit"></script>
   <style>
-    body { margin: 0; display: flex; height: 100vh; justify-content: center; align-items: center; background: black; }
+    body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; }
     video { width: 100%; height: 100%; object-fit: cover; }
   </style>
 </head>
 <body>
-  <video id="video" autoplay playsinline muted></video>
+  <video id="camera-output" autoplay playsinline muted></video>
   <script>
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => document.getElementById('video').srcObject = stream)
-      .catch(console.error);
+    async function initSnapCamera() {
+      try {
+        const apiKey = "eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzUzNzUyMDgzLCJzdWIiOiI3NGE0YzcyOS01NjNiLTQyNzAtOTc5MC1jZjdjNGQwMTAyOTJ-U1RBR0lOR341ZDNiNmIwNC1mNTQ5LTQ3NzItOGNiOC0yMmEwYjllNTcwNmUifQ.QwEpJK21BFnECJ7nK8rXBbWW0Zwjv1iv2P8WPuZlwUE"; // <--- FULL token
+        const lensGroupId = "ba5b3ae0-df79-4cb8-841f-189486eae158"; // Demo Lens Group
+
+        console.log("Initializing Snap Camera Kit...");
+
+        const cameraKit = await window.snapCameraKit.createCameraKit({ apiToken: apiKey });
+        const lensGroups = await cameraKit.lensRepository.loadLensGroups([lensGroupId]);
+
+        console.log("Lens groups loaded:", lensGroups);
+
+        if (!lensGroups.length || !lensGroups[0].lenses.length) {
+          throw new Error("No lenses found in the group");
+        }
+
+        const lens = lensGroups[0].lenses[0];
+        console.log("Applying lens:", lens);
+
+        const session = await cameraKit.createSession();
+        const videoElement = document.getElementById("camera-output");
+        await session.setRenderTarget(videoElement);
+        await session.play();
+        await session.applyLens(lens);
+
+        console.log("Lens applied successfully");
+      } catch (error) {
+        console.error("Snap Camera Kit error:", error);
+        alert("Error: " + error.message);
+      }
+    }
+    window.onload = initSnapCamera;
   </script>
 </body>
 </html>
