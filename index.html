@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Snap Camera Lens Demo</title>
+  <!-- Snap Camera Kit browser bundle -->
+  <script src="https://camera-kit.snapchat.com/sdk/camera-kit.js"></script>
   <style>
     body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; }
     video { width: 100%; height: 100%; object-fit: cover; }
@@ -11,17 +13,16 @@
 </head>
 <body>
   <video id="camera-output" autoplay playsinline muted></video>
-  <script type="module">
-    import { createCameraKit } from "https://unpkg.com/@snap/camera-kit";
-
+  <script>
     async function initSnapCamera() {
       try {
-        const apiKey = "eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzUzNzUyMDgzLCJzdWIiOiI3NGE0YzcyOS01NjNiLTQyNzAtOTc5MC1jZjdjNGQwMTAyOTJ-U1RBR0lOR341ZDNiNmIwNC1mNTQ5LTQ3NzItOGNiOC0yMmEwYjllNTcwNmUifQ.QwEpJK21BFnECJ7nK8rXBbWW0Zwjv1iv2P8WPuZlwUE"; // full token
-        const lensGroupId = "ba5b3ae0-df79-4cb8-841f-189486eae158";
+        const apiKey = "eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzUzNzUyMDgzLCJzdWIiOiI3NGE0YzcyOS01NjNiLTQyNzAtOTc5MC1jZjdjNGQwMTAyOTJ-U1RBR0lOR341ZDNiNmIwNC1mNTQ5LTQ3NzItOGNiOC0yMmEwYjllNTcwNmUifQ.QwEpJK21BFnECJ7nK8rXBbWW0Zwjv1iv2P8WPuZlwUE"; // <--- PUT FULL TOKEN HERE
+        const lensGroupId = "ba5b3ae0-df79-4cb8-841f-189486eae158"; // Demo Lens Group
 
         console.log("Initializing Snap Camera Kit...");
-        const cameraKit = await createCameraKit({ apiToken: apiKey });
+        const cameraKit = await window.snapCameraKit.createCameraKit({ apiToken: apiKey });
 
+        // Load lenses from demo lens group
         const lensGroups = await cameraKit.lensRepository.loadLensGroups([lensGroupId]);
         console.log("Lens groups loaded:", lensGroups);
 
@@ -44,7 +45,6 @@
         alert("Error: " + error.message);
       }
     }
-
     window.onload = initSnapCamera;
   </script>
 </body>
